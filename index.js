@@ -30,6 +30,14 @@ async function run() {
 
     const classCollection = client.db("YogaDb").collection("class");
     const instructorCollection = client.db("YogaDb").collection("instructor");
+    const myclassCollection = client.db("YogaDb").collection("myclass");
+
+    // myclass collection;
+   app.post('/myclass',async(req,res)=>{
+       const item = req.body;
+       const result = await myclassCollection.insertOne(item);
+       res.send(result);
+   })
 
   // class section
     app.get('/class',async(req,res)=>{
