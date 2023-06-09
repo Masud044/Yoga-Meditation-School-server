@@ -29,7 +29,7 @@ async function run() {
     await client.connect();
 
     const classCollection = client.db("YogaDb").collection("class");
-    const instructorCollection = client.db("YogaDb").collection("instructor");
+   
     const myclassCollection = client.db("YogaDb").collection("myclass");
 
     // myclass collection;
@@ -40,7 +40,7 @@ async function run() {
    })
    app.get('/myclass',async(req,res)=>{
        const email = req.query.email;
-       console.log(email)
+      //  console.log(email)
         if(!email){
            res.send([]);
         }
@@ -62,12 +62,7 @@ async function run() {
         res.send(result);
     })
 
-// instructor section
 
-app.get('/instructor',async(req,res)=>{
-    const result = await instructorCollection.find().toArray();
-    res.send(result);
-})
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
