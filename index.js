@@ -11,7 +11,7 @@ const port = process.env.PORT || 5000;
 
 
  
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_user}:${process.env.DB_pass}@cluster0.igjj82v.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -37,6 +37,23 @@ async function run() {
        const item = req.body;
        const result = await myclassCollection.insertOne(item);
        res.send(result);
+   })
+   app.get('/myclass',async(req,res)=>{
+       const email = req.query.email;
+       console.log(email)
+        if(!email){
+           res.send([]);
+        }
+        const query = {email:email};
+       const result = await myclassCollection.find(query).toArray();
+       res.send(result);
+   })
+
+   app.delete('/myclass/:id',async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id:new ObjectId(id)};
+      const result = await myclassCollection.deleteOne(query);
+      res.send(result);
    })
 
   // class section
