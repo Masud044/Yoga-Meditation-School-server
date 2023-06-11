@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 require('dotenv').config()
+const stripe=require('stripe')(process.env.Payment_secret_Key);
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -33,6 +34,7 @@ async function run() {
 
     const myclassCollection = client.db("YogaDb").collection("myclass");
     const instructorCollection = client.db("YogaDb").collection("instructor");
+    const paymentCollection = client.db("YogaDb").collection("payment");
 
     // instructor related api
 
@@ -171,7 +173,43 @@ async function run() {
         res.send(result);
 
     })
+  // create Payment 
 
+  app.post('/create-payment-intent', async (req, res)=>{
+       const{price}= req.body;
+       const amount = price*100;
+      //  console.log(price,amount)
+       const paymentIntent = await stripe.paymentIntents.create({
+           amount:amount,
+           currency: 'usd',
+           payment_method_types:['card']
+       });
+       res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+  })
+
+  app.post('/payment',async(req,res)=>{
+       const payment = req.body;
+
+       const insertResult = await paymentCollection.insertOne(payment);
+
+        const updatequery = {_id: new ObjectId(payment._id)}
+        const updateClass = {$inc:{enroll_student:1, availableSeats:-1}};
+        const updateResult = await classCollection.updateOne(updatequery,updateClass)
+
+        
+        
+
+       const deleteQuery ={_id: new ObjectId(payment._id)}
+       const deleteResult = await myclassCollection.deleteOne(deleteQuery);
+       res.send({insertResult,updateResult,deleteResult});
+  })
+
+  app.get('/payment/:email',async(res,req)=>{
+      const email = req.params.email;
+      const 
+  })
 
 
     // Send a ping to confirm a successful connection
