@@ -32,6 +32,28 @@ async function run() {
     const classCollection = client.db("YogaDb").collection("class");
 
     const myclassCollection = client.db("YogaDb").collection("myclass");
+    const instructorCollection = client.db("YogaDb").collection("instructor");
+
+    // instructor related api
+
+     app.post('/instructor',async(req,res)=>{
+      const item = req.body;
+      console.log(item);
+      
+      const query = { email: item.email }
+      console.log(query)
+      const existing = await instructorCollection.findOne(query);
+      if (existing) {
+        return res.send({ message: 'user already axist' })
+      }
+      const result = await instructorCollection.insertOne(item);
+      res.send(result);
+     })
+
+     app.get('/instructor',async(req,res)=>{
+         const result = await instructorCollection.find().toArray();
+         res.send(result);
+     })
 
     // user related apis
 
@@ -76,7 +98,7 @@ async function run() {
       const email = req.params.email;
       const query = { email: email }
       const user = await usersCollection.findOne(query);
-      const result = {admin:user?.role=='instructor'}
+      const result = {instructor:user?.role=='instructor'}
       res.send(result);
   })
     app.patch('/users/instructor/:id', async (req, res) => {
@@ -129,10 +151,25 @@ async function run() {
 
     app.get('/class/:email', async (req, res) => {
       const email = req.params.email;
-       console.log(email)
+      //  console.log(email)
       const query = { email: email };
       const result = await classCollection.find(query).toArray();
       res.send(result);
+    })
+
+    app.patch('/class/:id',async(req,res)=>{
+        const id = req.params.id;
+        const filter = {_id:new ObjectId(id)};
+        const updateStatus = req.body;
+        console.log(updateStatus);
+        const updateDoc = {
+          $set: {
+            status: updateStatus.status
+          },
+        };
+        const result = await classCollection.updateOne(filter,updateDoc);
+        res.send(result);
+
     })
 
 
