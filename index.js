@@ -142,7 +142,13 @@ async function run() {
 
     // class section
     app.get('/class', async (req, res) => {
-      const result = await classCollection.find().toArray();
+      const query ={}
+      const options = {
+        // sort matched documents in descending order by rating
+        sort: { "enroll_student": -1 },
+       
+      };
+      const result = await classCollection.find(query,options).toArray();
       res.send(result);
     })
     app.post('/class',async(req,res)=>{
@@ -194,7 +200,7 @@ async function run() {
 
        const insertResult = await paymentCollection.insertOne(payment);
 
-        const updatequery = {_id: new ObjectId(payment._id)}
+        const updatequery = {_id: new ObjectId(payment.ClassId)}
         const updateClass = {$inc:{enroll_student:1, availableSeats:-1}};
         const updateResult = await classCollection.updateOne(updatequery,updateClass)
 
@@ -206,9 +212,15 @@ async function run() {
        res.send({insertResult,updateResult,deleteResult});
   })
 
-  app.get('/payment/:email',async(res,req)=>{
-      const email = req.params.email;
-      const 
+  app.get('/payment',async(req,res)=>{
+     const query ={}
+    const options = {
+      // sort matched documents in descending order by rating
+      sort: { "date": -1 },
+     
+    };
+    const result = await paymentCollection.find(query,options).toArray();
+    res.send(result);
   })
 
 
