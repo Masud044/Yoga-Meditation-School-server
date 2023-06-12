@@ -172,7 +172,8 @@ async function run() {
         console.log(updateStatus);
         const updateDoc = {
           $set: {
-            status: updateStatus.status
+            status: updateStatus.status,
+            feedback:updateStatus.feedback
           },
         };
         const result = await classCollection.updateOne(filter,updateDoc);
