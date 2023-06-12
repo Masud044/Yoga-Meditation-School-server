@@ -144,7 +144,7 @@ async function run() {
     app.get('/class', async (req, res) => {
       const query ={}
       const options = {
-        // sort matched documents in descending order by rating
+       
         sort: { "enroll_student": -1 },
        
       };
@@ -159,7 +159,7 @@ async function run() {
 
     app.get('/class/:email', async (req, res) => {
       const email = req.params.email;
-      //  console.log(email)
+     
       const query = { email: email };
       const result = await classCollection.find(query).toArray();
       res.send(result);
